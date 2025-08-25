@@ -1,0 +1,140 @@
+import requests
+import datetime
+import time
+
+# --- Configuration ---
+# You need a valid API key from OpenWeatherMap.
+# The historical data API (One Call API 3.0 with historical data) is a paid feature.
+# You can sign up for a key here: https://home.openweathermap.org/api_keys
+API_KEY = "7c89c1ae4c9c8d498b484bd5f76d3bc8"
+
+# The geographical coordinates for Hyderabad, Telangana, India.
+LATITUDE = 17.3850
+LONGITUDE = 78.4867
+
+
+# --- API Interaction (Simulated) ---
+def get_historical_weather_data(api_key, lat, lon):
+    """
+    Simulates retrieving historical weather data for the last 7 days.
+
+    Args:
+        api_key (str): Your OpenWeather API key.
+        lat (float): Latitude of the location.
+        lon (float): Longitude of the location.
+
+    Returns:
+        list: A list of dictionaries, each representing a day's weather.
+    """
+    print("Attempting to connect to the OpenWeather API...")
+    print(
+        "Note: This is a simulation. For a real API call, ensure you have a valid API key and a paid subscription for historical data.")
+
+    # In a real-world application, you would make API calls for each of the last 7 days.
+    # The OpenWeather historical API requires a timestamp for each day.
+    # The base URL would look something like this for the One Call API 3.0:
+    # url = f"https://api.openweathermap.org/data/3.0/onecall/historical?lat={lat}&lon={lon}&dt={timestamp}&appid={api_key}&units=metric"
+
+    # We will use dummy data to represent a response that includes various weather conditions,
+    # as well as some notable highs and lows to act as anomalies.
+    today = datetime.date.today()
+    simulated_data = [
+        {"date": str(today - datetime.timedelta(days=6)), "temp_celsius": 28, "description": "Partly Cloudy"},
+        {"date": str(today - datetime.timedelta(days=5)), "temp_celsius": 30, "description": "Sunny"},
+        {"date": str(today - datetime.timedelta(days=4)), "temp_celsius": 32, "description": "Hot and Sunny"},
+        {"date": str(today - datetime.timedelta(days=3)), "temp_celsius": 40, "description": "Heatwave (Anomaly)"},
+        {"date": str(today - datetime.timedelta(days=2)), "temp_celsius": 25, "description": "Heavy Rain"},
+        {"date": str(today - datetime.timedelta(days=1)), "temp_celsius": 22, "description": "Cloudy"},
+        {"date": str(today), "temp_celsius": 18, "description": "Unseasonably Cold (Anomaly)"}
+    ]
+
+    # Simulate a delay to represent network latency.
+    time.sleep(1)
+
+    print("Data retrieved successfully (simulated).")
+    return simulated_data
+
+
+# --- Data Analysis Functions ---
+def find_anomalies(data):
+    """
+    Identifies weather anomalies from the provided data.
+
+    A simple method is to look for descriptive keywords like "Anomaly"
+    or compare a day's temperature to the average of the last week.
+    This function uses a keyword search.
+
+    Args:
+        data (list): A list of weather records.
+
+    Returns:
+        list: A list of anomalous records.
+    """
+    anomalies = []
+    # A simple way to spot an anomaly is a description that explicitly mentions it.
+    for day_data in data:
+        if "Anomaly" in day_data.get("description", ""):
+            anomalies.append(day_data)
+    return anomalies
+
+
+def analyze_weather_data(weather_records):
+    """
+    Analyzes weather data to find the highest and lowest temperatures and their dates,
+    and also prints all records.
+
+    Args:
+        weather_records (list): A list of dictionaries with weather data.
+    """
+    if not weather_records:
+        print("No weather data to analyze.")
+        return
+
+    # Initialize variables for tracking highs and lows
+    highest_temp = -float('inf')
+    lowest_temp = float('inf')
+    date_of_highest = ""
+    date_of_lowest = ""
+
+    # Find the highest and lowest temperatures and their corresponding dates
+    for record in weather_records:
+        temp = record.get("temp_celsius")
+        date = record.get("date")
+
+        if temp is not None:
+            if temp > highest_temp:
+                highest_temp = temp
+                date_of_highest = date
+            if temp < lowest_temp:
+                lowest_temp = temp
+                date_of_lowest = date
+
+    # Find anomalies
+    anomalies = find_anomalies(weather_records)
+
+    # Print all records from the last 7 days
+    print("\n--- Weather Records for Hyderabad, Telangana, India ---")
+    for record in weather_records:
+        print(f"Date: {record['date']}, Temp: {record['temp_celsius']}°C, Condition: {record['description']}")
+
+    # Print the analysis results
+    print("\n--- Weather Analysis ---")
+    print(f"Highest temperature: {highest_temp}°C, recorded on: {date_of_highest}")
+    print(f"Lowest temperature: {lowest_temp}°C, recorded on: {date_of_lowest}")
+
+    print("\n--- Anomalies Spotted ---")
+    if anomalies:
+        for anomaly in anomalies:
+            print(
+                f"Anomalous event on {anomaly['date']}: {anomaly['description']} with a temperature of {anomaly['temp_celsius']}°C")
+    else:
+        print("No specific anomalies were found.")
+
+
+# --- Main Execution ---
+if __name__ == "__main__":
+    # Get the weather data (simulated)
+    weather_data = get_historical_weather_data(API_KEY, LATITUDE, LONGITUDE)
+
+    # Analyze and print the retrieved data
+    analyze_weather_data(weather_data)
