@@ -2,6 +2,7 @@ import requests
 import datetime
 import time
 
+# Adding my Comment
 # --- Configuration ---
 # You need a valid API key from OpenWeatherMap.
 # The historical data API (One Call API 3.0 with historical data) is a paid feature.
